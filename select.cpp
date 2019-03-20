@@ -48,9 +48,15 @@ template < typename RandomAccessIterator >
 void selectionSort( RandomAccessIterator begin,
                    RandomAccessIterator end )
 {
-
-    // A COMPLETER
-
+    for(auto itI = begin; itI != end-1 ; itI++ ){
+        auto iMin = itI;
+        for(auto itJ = itI+1; itJ != end ; itJ++){
+            if(*itJ < *iMin){
+                iMin = itJ;
+            }
+        }
+        swap(*itI,*iMin);
+    }
 }
 
 // main
