@@ -56,6 +56,7 @@ void selectionSort( RandomAccessIterator begin,
             }
         }
         swap(*itI,*iMin);
+        display(begin,itI,iMin,end);
     }
 }
 
