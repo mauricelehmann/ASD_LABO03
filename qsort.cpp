@@ -74,6 +74,33 @@ template < typename RandomAccessIterator >
 void quickSort( RandomAccessIterator begin,
                RandomAccessIterator end )
 {
+    if(begin > end - 1){
+        return;
+    }
+
+    //On choisi le pivot
+    auto pivot = selectPivot(begin,end);
+    auto i = begin;
+    swap(*pivot,*(end - 1));
+    pivot = end - 1;
+    auto j = pivot - 1;
+
+    while(i <= j){
+        display(begin,pivot,end);
+
+        if( *i > *pivot ){
+            while(*i < *j){
+                j--;
+            }
+            swap(*i,*j);
+            i++;
+        }else{
+            i++;
+        }
+    }
+    swap(*i,*pivot);
+    quickSort(begin,i);
+    quickSort(i+1,end);
 
 }
 
@@ -101,10 +128,10 @@ int main(int argc, const char * argv[]) {
     // C array
 
     int array[] = { 7, 3, 6, 1, 9, 2, 0, 10, 12, -3 };
-    cout << endl;
+    cout << endl ;
     for(int i : array)
         cout << i << " ";
-    cout << endl;
+    cout << endl << endl;
 
     quickSort(array,array+10);
 
