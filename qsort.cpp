@@ -79,29 +79,29 @@ void quickSort( RandomAccessIterator begin,
     }
     //On choisi le pivot
     auto pivot = selectPivot(begin,end);
-    swap(*pivot,*(end - 1));
-
+    swap(*pivot,*(end-1));
     auto i = begin;
-    auto j = end - 2;
+    pivot = (end - 1);
+    auto j = pivot - 1;
 
-    while(i <= j){
-        if(*i > *(end - 1)){
-            if(*i > *j){
-                swap(*i,*j);
-                j--;
-            }else{
-                j--;
-            }
-        }else{
+    while(true){
+        while(*i < *pivot){
             i++;
         }
+        while(j > i && *pivot < *j ){
+            j--;
+        }
+        if(i >= j){
+            break;
+        }
+        swap(*i,*j);
+        ++i;
+        --j;
     }
-
-    swap(*(end-1),*i);
-
-    display(begin,i,end);
-    quickSort(begin,i);
-    quickSort(i+1,end);
+        swap(*i,*pivot);
+        display(begin,i,end);
+        quickSort(begin,i);
+        quickSort(i+1,end);
 }
 
 // main
@@ -126,14 +126,13 @@ int main(int argc, const char * argv[]) {
 
     // C array
 
-    //int array[] = { 7, 3, 6, 1, 9, 2, 0, 10, 12, -3 };
-    int array[] = {1,3,2,1,1,2};
+    int array[] = { 7, 3, 6, 1, 9, 2, 0, 10, 12, -3 };
     cout << endl;
     for(int i : array)
         cout << i << " ";
     cout << endl;
 
-    quickSort(array,array+6);
+    quickSort(array,array+10);
 
     for(int i : array)
         cout << i << " ";
