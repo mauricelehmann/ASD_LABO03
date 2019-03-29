@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <iostream>
 #include <type_traits>
 
 namespace asd1 {
@@ -33,7 +34,44 @@ namespace asd1 {
                   Fn key,
                   size_t max_key = -1)
   {
-// a compléter
+    //La valeur maximume de l'input n'a pas été définie, on doit le chercher
+    if(max_key == -1){
+        max_key = 0;
+
+        //QUESTION : Peut-on utiliser max_element() sachant qu'il nous faut utiliser la fonction Key DANS la fonction lambda.
+        // max_key = key(*(std::max_element(first,last, [&,key](const auto& a, const auto& b)
+        // { return key(*a) < key(*b) ; })));
+
+        for(auto i = first ; i != last ; i++){
+            if(key(*i) > max_key ){
+                max_key = key(*i);
+            }
+        }
+    }
+    //On initialise un tableau de comptage, de taille égal à max_key
+    //Toute les éléments sont initialisées à zéro
+    std::vector<std::size_t> countingTab(max_key+1,0);
+    //On compte les éléments du vecteur à trier
+    for(auto i = first ; i != last ; i++ ){
+        ++countingTab.at(key(*i));
+    }
+    //On additione chaques éléments avec le précedent
+    for(auto i = countingTab.begin() + 1; i != countingTab.end(); i++){
+        *i += *(i-1);
+    }
+
+    //shift tout les éléments de 1 à droite
+    std::rotate(countingTab.begin(),countingTab.end()-1,countingTab.end());
+    countingTab.front() = 0;
+
+    //Pour chaque éléments du tableau à trier
+    size_t j;
+    for(auto i = first; i != last ; i++){
+        //j est la position dans le nouveau tableau (ici output) de l'élément *i
+        j = countingTab.at(key(*i));
+        *(output + j) = *i ;
+        ++countingTab.at(key(*i));
+    }
   }
 
   /**
@@ -46,7 +84,15 @@ namespace asd1 {
    */
   void RadixSort(std::vector<unsigned int>& v)
   {
-// a compléter
+      std::vector<unsigned int> w(v.size());
+      const size_t MASK_SIZE = 0xff; //masque sur 8 bits
+      const size_t MAX_KEY = 0b11111111; //valeur maximale pour 8 bits
+      //On "trie comptage" 4 fois sur les groupes de 8 bits.
+      //La fonction lambda s'occupe de selectioner la bonne range de bits de l'unsigned int
+      for(size_t i = 0 ; i < 4 ; i++){
+        CountingSort(v.begin(),v.end(),w.begin(),[i,MASK_SIZE](const unsigned& val ){ return ((val >> (i * 8)) & MASK_SIZE);},MAX_KEY);
+        v = w;
+     }
   }
 }
 
