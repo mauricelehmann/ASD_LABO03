@@ -212,7 +212,7 @@ int main(int argc, const char * argv[]) {
          "Test tri rapide" << endl <<
          "###############" << endl << endl;
    
-   //test tri séléction pour tailleVecteur = {10^m | m E [1,2,3,4,5,6]
+   //test tri repide pour tailleVecteur = {10^m | m E [1,2,3,4,5,6]
    // valeurs entre 1-100
    // Pour cette fonction le temps de calcul est trop long, on va aller jusqu'à 10^4.
    resultat = 0;
@@ -221,7 +221,7 @@ int main(int argc, const char * argv[]) {
       textResultat(BORNE_VALEUR_MAX_1, tailleVecteur, resultat, NBR_SIMULATIONS);
    }
    
-   //test tri séléction pour tailleVecteur = 10^6
+   //test tri rapide pour tailleVecteur = 10^6
    // valeurs entre 1-k ou k = {k^m | k E [1,2,3,4,5,6];
    resultat = 0;
    unsigned int tailleRapide = 1000000;
