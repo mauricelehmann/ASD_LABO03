@@ -243,6 +243,7 @@ int main() {
    double resultat = 0;
    for(size_t tailleVecteur = 10; tailleVecteur <= 10000; tailleVecteur *= 10){
       resultat = testSelection(tailleVecteur, BORNE_VALEUR_MAX_1, NBR_SIMULATIONS);
+     textResultat(BORNE_VALEUR_MAX_1, tailleVecteur, resultat, NBR_SIMULATIONS);
    }
         
    //test tri séléction pour tailleVecteur = 10^3
