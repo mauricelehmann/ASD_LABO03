@@ -91,9 +91,9 @@ RandomAccessIterator selectPivot( const RandomAccessIterator begin,
     }
 }
 template<typename T>
-vector<T> creationVecteurValeurRandom(const int& TAILLE, int valeurMax) {
-  vector<T> v(TAILLE);
-  for(int i = 0; i < TAILLE; ++i) {
+vector<T> creationVecteurValeurRandom(size_t& taille, size_t valeurMax) {
+  vector<T> v(taille);
+  for(int i = 0; i < taille; ++i) {
     v.at(i) = rand() % valeurMax + 1;
   }
   return v;
@@ -228,70 +228,95 @@ double testTriComptage(const size_t& tailleVecteur,const size_t& NBR_SIMULATIONS
     return tempsTotal;
 }
 
-int main() {
+double testRadix (size_t taille, size_t borneMax, const size_t nbrSimulations){
+   double tempsTotal = 0;
+   for(size_t i = 0; i < nbrSimulations; i++){
+      vector<unsigned int> vValeurRandom = creationVecteurValeurRandom<unsigned int>(taille, borneMax);
+      //prendre le moment de départ
+       high_resolution_clock::time_point t1 = high_resolution_clock::now();
+       //exécuter les opérations à chronométrer ici
+       RadixSort(vValeurRandom);
+       //prendre le moment d’arrivée
+       high_resolution_clock::time_point t2 = high_resolution_clock::now();
+       //calcul du temps, ici en nanosecondes
+       double temps = (double) duration_cast<nanoseconds>(t2 - t1).count();
+       tempsTotal += temps;
+   }
+   return tempsTotal / (double)nbrSimulations;
+}
 
+int main() {
+ 
    srand(time(NULL));
    const size_t NBR_SIMULATIONS = 30;
-   const size_t BORNE_VALEUR_MAX_1 = 100;
+   const size_t VALEUR_MAX = 100;
+   const size_t TAILLE_MAX = 1000000;
 
 
    cout << "#################\nTest tri selectif\n#################\n" ;
 
-   // Tests tri séléction pour tailleVecteur = {10^m | m E [1,2,3,4]
+   // Tests tri séléction pour tailleVecteur = {10^m | m ∈ [1,2,3,4]
    // valeurs entre 1-100
    // Pour cette fonction le temps de calcul est trop long, on va aller jusqu'à 10^4.
    double resultat = 0;
    for(size_t tailleVecteur = 10; tailleVecteur <= 10000; tailleVecteur *= 10){
-      resultat = testsTri<int>(tailleVecteur, BORNE_VALEUR_MAX_1, NBR_SIMULATIONS,TRIS::SELECTION_SORT);
-      textResultat(BORNE_VALEUR_MAX_1, tailleVecteur, resultat, NBR_SIMULATIONS);
-   }
-
-   //test tri séléction pour tailleVecteur = 10^3
-   // valeurs entre 1 - k ou k = {k^m | k E [1,2,3,4,5,6];
-   resultat = 0;
-   size_t tailleSelection = 1000;
-   for(size_t borneMax = 10; borneMax  < 1000000; borneMax *= 10){
-      resultat = testsTri<int>(tailleSelection, borneMax, NBR_SIMULATIONS,TRIS::SELECTION_SORT);
-      textResultat(borneMax, tailleSelection, resultat, NBR_SIMULATIONS);
+      resultat = testsTri<int>(tailleVecteur, VALEUR_MAX, NBR_SIMULATIONS,TRIS::SELECTION_SORT);
+      textResultat(VALEUR_MAX, tailleVecteur, resultat, NBR_SIMULATIONS);
    }
 
   cout << "#################\nTest tri rapide\n#################\n" ;
 
-   //test tri rapide pour tailleVecteur = {10^m | m E [1,2,3,4,5,6]
+   //test tri rapide pour tailleVecteur = {10^m | m ∈ [1,2,3,4,5,6]
    // valeurs entre 1-100.
    resultat = 0;
-   for(size_t tailleVecteur = 10; tailleVecteur <= 1000000; tailleVecteur *= 10){
-      resultat = testsTri<int>(tailleVecteur, BORNE_VALEUR_MAX_1, NBR_SIMULATIONS,TRIS::QUICK_SORT);
-      textResultat(BORNE_VALEUR_MAX_1, tailleVecteur, resultat, NBR_SIMULATIONS);
+   for(size_t tailleVecteur = 10; tailleVecteur <= TAILLE_MAX; tailleVecteur *= 10){
+      resultat = testsTri<int>(tailleVecteur, VALEUR_MAX, NBR_SIMULATIONS,TRIS::QUICK_SORT);
+      textResultat(VALEUR_MAX, tailleVecteur, resultat, NBR_SIMULATIONS);
    }
 
    //test tri rapide pour tailleVecteur = 10^6
-   // valeurs entre 1-k ou k = {k^m | k E [1,2,3,4,5,6];
+   // valeurs entre 1-k ou k = {k^m | k ∈ [1,2,3,4,5,6];
    resultat = 0;
-   size_t tailleRapide = 1000000;
-   for(size_t borneMax = 10; borneMax  < 1000000; borneMax *= 10){
-      resultat = testsTri<int>(tailleRapide, borneMax, NBR_SIMULATIONS,TRIS::QUICK_SORT);
-      textResultat(borneMax, tailleRapide, resultat, NBR_SIMULATIONS);
+   for(size_t borneMax = 10; borneMax  < TAILLE_MAX; borneMax *= 10){
+      resultat = testsTri<int>(TAILLE_MAX, borneMax, NBR_SIMULATIONS,TRIS::QUICK_SORT);
+      textResultat(borneMax, TAILLE_MAX, resultat, NBR_SIMULATIONS);
    }
 
    cout << "#################\nTest tri comptage\n#################\n" ;
 
-   //test tri de comptage pour tailleVecteur = {10^m | m E [1,2,3,4,5,6]
+   //test tri de comptage pour tailleVecteur = {10^m | m ∈ [1,2,3,4,5,6]
    // valeurs entre 1-100.
    size_t V_MAX = 100;
-   for(size_t tailleVecteur = 10; tailleVecteur <= 1000000; tailleVecteur *= 10){
+   for(size_t tailleVecteur = 10; tailleVecteur <= TAILLE_MAX; tailleVecteur *= 10){
        double tempsTotal = testTriComptage(tailleVecteur,NBR_SIMULATIONS,V_MAX);
        tempsTotal /= (double)NBR_SIMULATIONS;
-       textResultat(BORNE_VALEUR_MAX_1, tailleVecteur, tempsTotal,  NBR_SIMULATIONS);
+       textResultat(VALEUR_MAX, tailleVecteur, tempsTotal,  NBR_SIMULATIONS);
    }
 
    //test tri de comptage pour tailleVecteur = 10^6
-   // valeurs entre 1-k ou k = {k^m | k E [1,2,3,4,5,6];
-   size_t tailleCounting = 1000000;
-   for(size_t borneMax = 10; borneMax <= tailleCounting; borneMax *= 10){
-       double tempsTotal = testTriComptage(tailleCounting,NBR_SIMULATIONS,borneMax);
+   // valeurs entre 1-k ou k = {k^m | k ∈ [1,2,3,4,5,6];
+   for(size_t borneMax = 10; borneMax <= TAILLE_MAX; borneMax *= 10){
+       double tempsTotal = testTriComptage(TAILLE_MAX,NBR_SIMULATIONS,borneMax);
        tempsTotal /= (double)NBR_SIMULATIONS;
-       textResultat(borneMax, tailleCounting, tempsTotal, NBR_SIMULATIONS);
+       textResultat(borneMax, TAILLE_MAX, tempsTotal, NBR_SIMULATIONS);
+   }
+   
+   cout << "#################\nTest tri radix\n#################\n" ;
+   
+   //test tri radix pour tailleVecteur = {10^m | m ∈ [1,2,3,4,5,6]
+   // valeurs entre 1-100.
+   resultat = 0;
+   for(size_t tailleVecteur = 10; tailleVecteur <= TAILLE_MAX; tailleVecteur *= 10){
+      resultat = testRadix(tailleVecteur, VALEUR_MAX, NBR_SIMULATIONS);
+      textResultat(VALEUR_MAX, tailleVecteur, resultat, NBR_SIMULATIONS);
+   }
+
+   //test tri radix pour tailleVecteur = 10^6
+   // valeurs entre 1-k ou k = {k^m | k ∈ [1,2,3,4,5,6];
+   resultat = 0;
+   for(size_t borneMax = 10; borneMax  < TAILLE_MAX; borneMax *= 10){
+      resultat = testRadix(TAILLE_MAX, borneMax, NBR_SIMULATIONS);
+      textResultat(borneMax, TAILLE_MAX, resultat, NBR_SIMULATIONS);
    }
 
    return EXIT_SUCCESS;
