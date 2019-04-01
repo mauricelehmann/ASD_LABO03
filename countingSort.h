@@ -62,9 +62,10 @@ namespace asd1 {
 
     //shift tout les éléments de 1 à droite
     std::rotate(countingTab.begin(),countingTab.end()-1,countingTab.end());
+    //le premier élément doit être à zéro
     countingTab.front() = 0;
 
-    //Pour chaque éléments du tableau à trier
+    //Pour chaque éléments du tableau à trier:
     size_t j;
     for(auto i = first; i != last ; i++){
         //j est la position dans le nouveau tableau (ici output) de l'élément *i
