@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <utility>
 #include <climits>
@@ -14,10 +13,6 @@
 using namespace std;
 using namespace chrono;
 using namespace asd1;
-
-const size_t V_SIZE = 25;
-const size_t V_MAX = 5;
-
 
 // Classe encapsulant un entier non signé. Elle ne met pas
 // en oeuvre les opérateurs de comparaison tels que <, >, ...
@@ -95,25 +90,14 @@ RandomAccessIterator selectPivot( const RandomAccessIterator begin,
         return p2;
     }
 }
-
-
-vector<int> creationVecteurValeurRandom(const int& TAILLE, int valeurMax) {
-  vector<int> v(TAILLE);
+template<typename T>
+vector<T> creationVecteurValeurRandom(const int& TAILLE, int valeurMax) {
+  vector<T> v(TAILLE);
   for(int i = 0; i < TAILLE; ++i) {
     v.at(i) = rand() % valeurMax + 1;
   }
   return v;
 }
-
-
-void textResultat(unsigned int borneMax, unsigned int taille, double resultat,  unsigned int nbrSimulations){
-         cout << "Pour un vecteur de taille : " << taille << " de valeur entre 1 a "
-              << borneMax << " [compris]. " << endl
-              << "Nombres de simulations      : " << nbrSimulations << endl 
-              << "Temps moyen en nanosecondes : " << resultat << "[ns]" << endl
-              << "Temps moyen en seconde      : " << resultat / 1000000000 << "[s] " << endl;
-}
-
 
 // ________________________________________
 
@@ -137,26 +121,12 @@ void selectionSort( RandomAccessIterator begin,
     }
 }
 
-
-double testSelection (size_t taille, size_t borneMax, const size_t nbrSimulations){
-   double tempsTotal = 0;
-   for(size_t i = 0; i < nbrSimulations; i++){
-      vector<int> vValeurRandom = creationVecteurValeurRandom(taille, borneMax);
-      //prendre le moment de départ
-       high_resolution_clock::time_point t1 = high_resolution_clock::now();
-       //exécuter les opérations à chronométrer ici
-       selectionSort(vValeurRandom.begin(), vValeurRandom.end());
-       //prendre le moment d’arrivée
-       high_resolution_clock::time_point t2 = high_resolution_clock::now();
-       //calcul du temps, ici en nanosecondes
-       double temps = (double) duration_cast<nanoseconds>(t2 - t1).count();
-       tempsTotal += temps;
-   }
-   return tempsTotal / (double)nbrSimulations;
-}
-
-
-// _____________________________________
+// quickSort
+//
+// Effectue le tri rapide des éléments entre begin
+// et end (non inclus). Doit appeler selectPivot(...)
+// pour le choix du pivot, et display() après chaque
+// partition
 
 template < typename RandomAccessIterator >
 void quickSort( RandomAccessIterator begin,
@@ -191,16 +161,32 @@ void quickSort( RandomAccessIterator begin,
         quickSort(i+1,end);
 }
 
+//________________________________________
+//
+//Fonctions de tests des algorithmes de tris
+//________________________________________
 
+enum class TRIS{SELECTION_SORT, QUICK_SORT, COUNTING_SORT};
 
-double testRapide (size_t taille, size_t borneMax, const size_t nbrSimulations){
+void textResultat(unsigned int borneMax, unsigned int taille, double resultat,  unsigned int nbrSimulations){
+         cout << "Pour un vecteur de taille : " << taille << " de valeur entre 1 a "
+              << borneMax << " [compris]. " << endl
+              << "Nombres de simulations      : " << nbrSimulations << endl
+              << "Temps moyen en nanosecondes : " << resultat << "[ns]" << endl
+              << "Temps moyen en seconde      : " << resultat / 1000000000 << "[s] " << endl;
+}
+template<typename T>
+double testsTri(size_t taille, size_t borneMax, const size_t nbrSimulations, TRIS tri ){
    double tempsTotal = 0;
    for(size_t i = 0; i < nbrSimulations; i++){
-      vector<int> vValeurRandom = creationVecteurValeurRandom(taille, borneMax);
+       vector<T> vValeurRandom = creationVecteurValeurRandom<T>(taille, borneMax);
       //prendre le moment de départ
        high_resolution_clock::time_point t1 = high_resolution_clock::now();
        //exécuter les opérations à chronométrer ici
-       quickSort(vValeurRandom.begin(), vValeurRandom.end());
+       switch (tri) {
+           case TRIS::QUICK_SORT: quickSort(vValeurRandom.begin(),vValeurRandom.end()); break;
+           case TRIS::SELECTION_SORT: selectionSort(vValeurRandom.begin(),vValeurRandom.end()); break;
+       }
        //prendre le moment d’arrivée
        high_resolution_clock::time_point t2 = high_resolution_clock::now();
        //calcul du temps, ici en nanosecondes
@@ -208,122 +194,105 @@ double testRapide (size_t taille, size_t borneMax, const size_t nbrSimulations){
        tempsTotal += temps;
    }
    return tempsTotal / (double)nbrSimulations;
-   
+}
+
+double testTriComptage(const size_t& tailleVecteur,const size_t& NBR_SIMULATIONS, const size_t& V_MAX){
+
+    std::mt19937_64 gen(0);
+    std::uniform_int_distribution<unsigned> alea (0,V_MAX);
+    RandomPairGenerator<unsigned> rpg(alea,gen);
+
+    using E = unsigned int;
+    using Pairs = pair<E,E>;
+    auto pair2string = p2s<E>;
+    auto first_element = first<E>;
+    auto second_element = second<E>;
+
+    vector<Pairs> v(tailleVecteur), w(tailleVecteur);
+
+    double tempsTotal = 0;
+
+    for(size_t i = 0; i < NBR_SIMULATIONS; i++){
+        //vector<Pairs> vValeurRandom(tailleVecteur), w(tailleVecteur);
+        generate(v.begin(), v.end(), rpg );
+       //prendre le moment de départ
+        high_resolution_clock::time_point t1 = high_resolution_clock::now();
+        //exécuter les opérations à chronométrer ici
+        CountingSort(v.begin(), v.end(), w.begin(), first_element, rpg.max());
+        //prendre le moment d’arrivée
+        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+        //calcul du temps, ici en nanosecondes
+        double temps = (double) duration_cast<nanoseconds>(t2 - t1).count();
+        tempsTotal += temps;
+    }
+    return tempsTotal;
 }
 
 int main() {
+
    srand(time(NULL));
-   
-   size_t NBR_SIMULATIONS = 30;
-   size_t BORNE_VALEUR_MAX_1 = 100;
-   const size_t V_SIZE = 25;
-   const size_t V_MAX = 5;
-   
-   std::mt19937_64 gen(0);
-   std::uniform_int_distribution<unsigned> alea (0,V_MAX);
-   RandomPairGenerator<unsigned> rpg(alea,gen);
-  
-   using E = unsigned int;
-   using Pairs = pair<E,E>;
-   auto pair2string = p2s<E>;
-   auto first_element = first<E>;
-   auto second_element = second<E>;
-   
-   
-    vector<Pairs> v(V_SIZE), w(V_SIZE);
-    
-      cout << "#################" << endl <<
-            "Test tri selectif" << endl <<
-            "#################" << endl << endl;
-       
-      
-   //test tri séléction pour tailleVecteur = {10^m | m E [1,2,3,4]
+   const size_t NBR_SIMULATIONS = 30;
+   const size_t BORNE_VALEUR_MAX_1 = 100;
+
+
+   cout << "#################\nTest tri selectif\n#################\n" ;
+
+   // Tests tri séléction pour tailleVecteur = {10^m | m E [1,2,3,4]
    // valeurs entre 1-100
    // Pour cette fonction le temps de calcul est trop long, on va aller jusqu'à 10^4.
    double resultat = 0;
    for(size_t tailleVecteur = 10; tailleVecteur <= 10000; tailleVecteur *= 10){
-      resultat = testSelection(tailleVecteur, BORNE_VALEUR_MAX_1, NBR_SIMULATIONS);
-     textResultat(BORNE_VALEUR_MAX_1, tailleVecteur, resultat, NBR_SIMULATIONS);
+      resultat = testsTri<int>(tailleVecteur, BORNE_VALEUR_MAX_1, NBR_SIMULATIONS,TRIS::SELECTION_SORT);
+      textResultat(BORNE_VALEUR_MAX_1, tailleVecteur, resultat, NBR_SIMULATIONS);
    }
-        
+
    //test tri séléction pour tailleVecteur = 10^3
    // valeurs entre 1 - k ou k = {k^m | k E [1,2,3,4,5,6];
    resultat = 0;
    size_t tailleSelection = 1000;
    for(size_t borneMax = 10; borneMax  < 1000000; borneMax *= 10){
-      resultat = testSelection(tailleSelection, borneMax, NBR_SIMULATIONS); 
+      resultat = testsTri<int>(tailleSelection, borneMax, NBR_SIMULATIONS,TRIS::SELECTION_SORT);
       textResultat(borneMax, tailleSelection, resultat, NBR_SIMULATIONS);
    }
-   
-   cout << endl << "###############" << endl <<
-         "Test tri rapide" << endl <<
-         "###############" << endl << endl;
-   
+
+  cout << "#################\nTest tri rapide\n#################\n" ;
+
    //test tri rapide pour tailleVecteur = {10^m | m E [1,2,3,4,5,6]
    // valeurs entre 1-100.
    resultat = 0;
    for(size_t tailleVecteur = 10; tailleVecteur <= 1000000; tailleVecteur *= 10){
-      resultat = testRapide(tailleVecteur, BORNE_VALEUR_MAX_1, NBR_SIMULATIONS); 
+      resultat = testsTri<int>(tailleVecteur, BORNE_VALEUR_MAX_1, NBR_SIMULATIONS,TRIS::QUICK_SORT);
       textResultat(BORNE_VALEUR_MAX_1, tailleVecteur, resultat, NBR_SIMULATIONS);
    }
-   
+
    //test tri rapide pour tailleVecteur = 10^6
    // valeurs entre 1-k ou k = {k^m | k E [1,2,3,4,5,6];
    resultat = 0;
    size_t tailleRapide = 1000000;
    for(size_t borneMax = 10; borneMax  < 1000000; borneMax *= 10){
-      resultat = testRapide(tailleRapide, borneMax, NBR_SIMULATIONS); 
+      resultat = testsTri<int>(tailleRapide, borneMax, NBR_SIMULATIONS,TRIS::QUICK_SORT);
       textResultat(borneMax, tailleRapide, resultat, NBR_SIMULATIONS);
    }
-   
-      cout << endl << "#################" << endl <<
-           "Test tri comptage" << endl <<
-           "#################" << endl << endl;
-      
+
+   cout << "#################\nTest tri comptage\n#################\n" ;
+
    //test tri de comptage pour tailleVecteur = {10^m | m E [1,2,3,4,5,6]
    // valeurs entre 1-100.
+   size_t V_MAX = 100;
    for(size_t tailleVecteur = 10; tailleVecteur <= 1000000; tailleVecteur *= 10){
-      double tempsTotal = 0;
-      for(size_t i = 0; i < NBR_SIMULATIONS; i++){
-         vector<Pairs> vValeurRandom(tailleVecteur), w(tailleVecteur);
-         generate(v.begin(), v.end(), rpg );
-         //prendre le moment de départ
-          high_resolution_clock::time_point t1 = high_resolution_clock::now();
-          //exécuter les opérations à chronométrer ici
-          CountingSort(vValeurRandom.begin(), vValeurRandom.end(), w.begin(), first_element, rpg.max());
-          //prendre le moment d’arrivée
-          high_resolution_clock::time_point t2 = high_resolution_clock::now();
-          //calcul du temps, ici en nanosecondes
-          double temps = (double) duration_cast<nanoseconds>(t2 - t1).count();
-          tempsTotal += temps;
-      }
-   tempsTotal /= (double)NBR_SIMULATIONS;  
-   textResultat(BORNE_VALEUR_MAX_1, tailleVecteur, tempsTotal,  NBR_SIMULATIONS);
+       double tempsTotal = testTriComptage(tailleVecteur,NBR_SIMULATIONS,V_MAX);
+       tempsTotal /= (double)NBR_SIMULATIONS;
+       textResultat(BORNE_VALEUR_MAX_1, tailleVecteur, tempsTotal,  NBR_SIMULATIONS);
    }
-      
-      
+
    //test tri de comptage pour tailleVecteur = 10^6
    // valeurs entre 1-k ou k = {k^m | k E [1,2,3,4,5,6];
    size_t tailleCounting = 1000000;
    for(size_t borneMax = 10; borneMax <= tailleCounting; borneMax *= 10){
-      
-      double tempsTotal = 0;
-      for(size_t i = 0; i < NBR_SIMULATIONS; i++){
-         vector<Pairs> vValeurRandom(tailleCounting), w(tailleCounting);
-         generate(v.begin(), v.end(), rpg );
-         //prendre le moment de départ
-          high_resolution_clock::time_point t1 = high_resolution_clock::now();
-          //exécuter les opérations à chronométrer ici
-          CountingSort(vValeurRandom.begin(), vValeurRandom.end(), w.begin(), first_element, rpg.max());
-          //prendre le moment d’arrivée
-          high_resolution_clock::time_point t2 = high_resolution_clock::now();
-          //calcul du temps, ici en nanosecondes
-          double temps = (double) duration_cast<nanoseconds>(t2 - t1).count();
-          tempsTotal += temps;
-      }
-   tempsTotal /= (double)NBR_SIMULATIONS;  
-   textResultat(borneMax, tailleCounting, tempsTotal,  NBR_SIMULATIONS);
+       double tempsTotal = testTriComptage(tailleCounting,NBR_SIMULATIONS,borneMax);
+       tempsTotal /= (double)NBR_SIMULATIONS;
+       textResultat(borneMax, tailleCounting, tempsTotal, NBR_SIMULATIONS);
    }
-      return EXIT_SUCCESS;
-}
 
+   return EXIT_SUCCESS;
+}
