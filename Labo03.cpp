@@ -213,7 +213,6 @@ double testTriComptage(const size_t& tailleVecteur,const size_t& NBR_SIMULATIONS
     double tempsTotal = 0;
 
     for(size_t i = 0; i < NBR_SIMULATIONS; i++){
-        //vector<Pairs> vValeurRandom(tailleVecteur), w(tailleVecteur);
         generate(v.begin(), v.end(), rpg );
        //prendre le moment de départ
         high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -246,19 +245,19 @@ double testRadix (size_t taille, size_t borneMax, const size_t nbrSimulations){
 }
 
 int main() {
- 
+
    srand(time(NULL));
    const size_t NBR_SIMULATIONS = 30;
    const size_t VALEUR_MAX = 100;
    const size_t TAILLE_MAX = 1000000;
-
+   double resultat = 0;
 
    cout << "#################\nTest tri selectif\n#################\n" ;
 
    // Tests tri séléction pour tailleVecteur = {10^m | m ∈ [1,2,3,4]
    // valeurs entre 1-100
    // Pour cette fonction le temps de calcul est trop long, on va aller jusqu'à 10^4.
-   double resultat = 0;
+
    for(size_t tailleVecteur = 10; tailleVecteur <= 10000; tailleVecteur *= 10){
       resultat = testsTri<int>(tailleVecteur, VALEUR_MAX, NBR_SIMULATIONS,TRIS::SELECTION_SORT);
       textResultat(VALEUR_MAX, tailleVecteur, resultat, NBR_SIMULATIONS);
@@ -300,9 +299,9 @@ int main() {
        tempsTotal /= (double)NBR_SIMULATIONS;
        textResultat(borneMax, TAILLE_MAX, tempsTotal, NBR_SIMULATIONS);
    }
-   
+
    cout << "#################\nTest tri radix\n#################\n" ;
-   
+
    //test tri radix pour tailleVecteur = {10^m | m ∈ [1,2,3,4,5,6]
    // valeurs entre 1-100.
    resultat = 0;
@@ -313,10 +312,11 @@ int main() {
 
    //test tri radix pour tailleVecteur = 10^6
    // valeurs entre 1-k ou k = {k^m | k ∈ [1,2,3,4,5,6];
+   size_t TAILLE_MAX_RADIX = 1000000;
    resultat = 0;
-   for(size_t borneMax = 10; borneMax  < TAILLE_MAX; borneMax *= 10){
-      resultat = testRadix(TAILLE_MAX, borneMax, NBR_SIMULATIONS);
-      textResultat(borneMax, TAILLE_MAX, resultat, NBR_SIMULATIONS);
+   for(size_t borneMax = 10; borneMax  < TAILLE_MAX_RADIX; borneMax *= 10){
+      resultat = testRadix(TAILLE_MAX_RADIX, borneMax, NBR_SIMULATIONS);
+      textResultat(borneMax, TAILLE_MAX_RADIX, resultat, NBR_SIMULATIONS);
    }
 
    return EXIT_SUCCESS;
