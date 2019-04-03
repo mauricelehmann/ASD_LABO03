@@ -188,11 +188,14 @@ void quickSort( RandomAccessIterator begin,
 enum class TRIS{SELECTION_SORT, QUICK_SORT, COUNTING_SORT};
 
 void textResultat(unsigned int borneMax, unsigned int taille, double resultat,  unsigned int nbrSimulations){
-         cout << "Pour un vecteur de taille : " << taille << " de valeur entre 1 a "
-              << borneMax << " [compris]. " << endl
-              << "Nombres de simulations      : " << nbrSimulations << endl
-              << "Temps moyen en nanosecondes : " << resultat << "[ns]" << endl
-              << "Temps moyen en seconde      : " << resultat / 1000000000 << "[s] " << endl;
+
+    //nanoseconds in seconds
+    const size_t nsPerS = 1000000000;
+    cout << "Pour un vecteur de taille : " << taille << " de valeur entre 1 a "
+      << borneMax << " [compris]. " << endl
+      << "Nombres de simulations      : " << nbrSimulations << endl
+      << "Temps moyen en nanosecondes : " << resultat << "[ns]" << endl
+      << "Temps moyen en seconde      : " << resultat / nsPerS << "[s] " << endl;
 }
 template<typename T>
 double testsTri(size_t taille, size_t borneMax, const size_t nbrSimulations, TRIS tri ){
