@@ -1,7 +1,17 @@
-//
-//  CountingSort.h
-//
+/*
+ -----------------------------------------------------------------------------------
+ Laboratoire : ASD_03
+ Fichier     : CountingSort.h
+ Auteur(s)   : Maurice Lehmann, Nicolas Hungerbühler, Florian Schaufelberger
+ Date        : 02.04.2019
 
+ But         : Déclarations & définitions des tris suivants :
+             - Tri comptage générique
+             - Radix Sort ( avec des unsigned int ), utilisant le tri comptage 4 fois
+
+ Compilateur : MinGW-g++ 6.3.0
+ -----------------------------------------------------------------------------------
+*/
 #ifndef CountingSort_h
 #define CountingSort_h
 
@@ -37,11 +47,6 @@ namespace asd1 {
     //La valeur maximume de l'input n'a pas été définie, on doit le chercher
     if(max_key == -1){
         max_key = 0;
-
-        //QUESTION : Peut-on utiliser max_element() sachant qu'il nous faut utiliser la fonction Key DANS la fonction lambda.
-        // max_key = key(*(std::max_element(first,last, [&,key](const auto& a, const auto& b)
-        // { return key(*a) < key(*b) ; })));
-
         for(auto i = first ; i != last ; i++){
             if(key(*i) > max_key ){
                 max_key = key(*i);

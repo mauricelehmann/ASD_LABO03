@@ -1,10 +1,17 @@
-//
-//  select.cpp
-//
-//  Created by Olivier Cuisenaire on 10.04.15.
-//  Copyright (c) 2015 Olivier Cuisenaire. All rights reserved.
-//
+/*
+ -----------------------------------------------------------------------------------
+ Laboratoire : ASD_03
+ Fichier     : select.cpp
+ Auteur(s)   : Maurice Lehmann, Nicolas Hungerbühler, Florian Schaufelberger
+ Date        : 02.04.2019
 
+ But         : Déclarations & définitions du tri Selection Sort
+               Tests & affichage du tri Selection Sort ( Created by Olivier Cuisenaire on 10.04.15.)
+               Copyright (c) 2015 Olivier Cuisenaire. All rights reserved.
+
+ Compilateur : MinGW-g++ 6.3.0
+ -----------------------------------------------------------------------------------
+*/
 #include <iostream>
 #include <utility>
 #include <climits>
