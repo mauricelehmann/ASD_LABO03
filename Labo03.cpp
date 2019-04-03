@@ -1,3 +1,22 @@
+/*
+ -----------------------------------------------------------------------------------
+ Laboratoire : ASD_03
+ Fichier     : labo03.cpp
+ Auteur(s)   : Maurice Lehmann, Nicolas Hungerbühler, Florian Schaufelberger
+ Date        : 02.04.2019
+
+ But         : Mesurer la durée en temps des algorithmes de tris implémentés dans le cadre du labo ADS03
+               Les tris sont : Quick Sort , Selection Sort, Counting Sort & Radix Sort
+               Les mesures sont basées sur une moyenne de 30 simulations.
+               Chaque simulation utilise un vecteur à trier, rempli de valeurs aléatoires.
+               On test deux cas de figure :
+               - Vecteurs avec n entiers positif aléatoires entre 1 et 100 (inclus), avec n = {10^m | m ∈ [1,2, … ,6]}
+               - Vecteurs de taille n = 100'000 entiers positifs aléatoire entre 1 et k (inclus), avec k = {10^m | m ∈ [1,2, … ,6]}
+
+ Compilateur : MinGW-g++ 6.3.0
+ -----------------------------------------------------------------------------------
+*/
+
 #include <iostream>
 #include <utility>
 #include <climits>
