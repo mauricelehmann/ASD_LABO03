@@ -185,8 +185,6 @@ void quickSort( RandomAccessIterator begin,
 //Fonctions de tests des algorithmes de tris
 //________________________________________
 
-enum class TRIS{SELECTION_SORT, QUICK_SORT, COUNTING_SORT};
-
 void textResultat(unsigned int borneMax, unsigned int taille, double resultat,  unsigned int nbrSimulations){
 
     //nanoseconds in seconds
@@ -197,18 +195,16 @@ void textResultat(unsigned int borneMax, unsigned int taille, double resultat,  
       << "Temps moyen en nanosecondes : " << resultat << "[ns]" << endl
       << "Temps moyen en seconde      : " << resultat / nsPerS << "[s] " << endl;
 }
-template<typename T>
-double testsTri(size_t taille, size_t borneMax, const size_t nbrSimulations, TRIS tri ){
+
+template<typename T, typename Fn>
+double testsTri(size_t taille, size_t borneMax, const size_t nbrSimulations, Fn tri ){
    double tempsTotal = 0;
    for(size_t i = 0; i < nbrSimulations; i++){
        vector<T> vValeurRandom = creationVecteurValeurRandom<T>(taille, borneMax);
       //prendre le moment de départ
        high_resolution_clock::time_point t1 = high_resolution_clock::now();
        //exécuter les opérations à chronométrer ici
-       switch (tri) {
-           case TRIS::QUICK_SORT: quickSort(vValeurRandom.begin(),vValeurRandom.end()); break;
-           case TRIS::SELECTION_SORT: selectionSort(vValeurRandom.begin(),vValeurRandom.end()); break;
-       }
+       tri(vValeurRandom.begin(),vValeurRandom.end());
        //prendre le moment d’arrivée
        high_resolution_clock::time_point t2 = high_resolution_clock::now();
        //calcul du temps, ici en nanosecondes
@@ -268,6 +264,7 @@ double testRadix (size_t taille, size_t borneMax, const size_t nbrSimulations){
 
 int main() {
 
+   #define vectorIntIt vector<int>::iterator
    srand(time(NULL));
    const size_t NBR_SIMULATIONS = 30;
    const size_t VALEUR_MAX = 100;
@@ -281,7 +278,7 @@ int main() {
    // Pour cette fonction le temps de calcul est trop long, on va aller jusqu'à 10^4.
 
    for(size_t tailleVecteur = 10; tailleVecteur <= 10000; tailleVecteur *= 10){
-      resultat = testsTri<int>(tailleVecteur, VALEUR_MAX, NBR_SIMULATIONS,TRIS::SELECTION_SORT);
+      resultat = testsTri<int>(tailleVecteur, VALEUR_MAX, NBR_SIMULATIONS,selectionSort<vectorIntIt>);
       textResultat(VALEUR_MAX, tailleVecteur, resultat, NBR_SIMULATIONS);
    }
 
@@ -291,7 +288,7 @@ int main() {
    // valeurs entre 1-100.
    resultat = 0;
    for(size_t tailleVecteur = 10; tailleVecteur <= TAILLE_MAX; tailleVecteur *= 10){
-      resultat = testsTri<int>(tailleVecteur, VALEUR_MAX, NBR_SIMULATIONS,TRIS::QUICK_SORT);
+      resultat = testsTri<int>(tailleVecteur, VALEUR_MAX, NBR_SIMULATIONS,quickSort<vectorIntIt>);
       textResultat(VALEUR_MAX, tailleVecteur, resultat, NBR_SIMULATIONS);
    }
 
@@ -299,7 +296,7 @@ int main() {
    // valeurs entre 1-k ou k = {k^m | k ∈ [1,2,3,4,5,6];
    resultat = 0;
    for(size_t borneMax = 10; borneMax  < TAILLE_MAX; borneMax *= 10){
-      resultat = testsTri<int>(TAILLE_MAX, borneMax, NBR_SIMULATIONS,TRIS::QUICK_SORT);
+      resultat = testsTri<int>(TAILLE_MAX, borneMax, NBR_SIMULATIONS,quickSort<vectorIntIt>);
       textResultat(borneMax, TAILLE_MAX, resultat, NBR_SIMULATIONS);
    }
 
